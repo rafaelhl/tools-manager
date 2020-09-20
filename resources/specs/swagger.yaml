@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Tools Manager API
+  description: This API is to manage all useful tools storing links and tags to be filtered.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Tools
+
+components:
+  schemas:
+    NewTool:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "json-server"
+        link:
+          type: string
+          example: "https://github.com/typicode/json-server"
+        description:
+          type: string
+          example: "Fake REST API based on a json schema. Useful for mocking and creating APIs for front-end devs to consume in coding challenges."
+        tags:
+          type: array
+          items:
+            type: string
+          example:
+            - "api"
+            - "json"
+            - "schema"
+            - "node"
+            - "github"
+            - "rest"
+    Tool:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              example: 2
+        - $ref: "#/components/schemas/NewTool"
+
+paths:
+  /tools:
+    get:
+      tags:
+        - "Tools"
+      summary: Returns all tools
+      description: All tools stored will be returned and is possible to do a filter by tag.
+      responses:
+        '200':
+          description: Returning all tools
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tool"
+        '500':
+          description: Some wrong occurs
+    post:
+      tags:
+        - "Tools"
+      summary: Create a new tool
+      description: Inserts a new tool following the JSON sent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewTool"
+      responses:
+        '201':
+          description: The tool was created
+        '400':
+          description: Invalid payload
+        '500':
+          description: Some wrong occurs
+  /tools/:id:
+    delete:
+      tags:
+        - "Tools"
+      summary: Delete a tool
+      description: Removes the tool sent by ID from database.
+      responses:
+        '204':
+          description: The tool was removed
+        '400':
+          description: Invalid ID
+        '500':
+          description: Some wrong occurs
